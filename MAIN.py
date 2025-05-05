@@ -19,7 +19,7 @@ source_dirs = ['chickenpox','Measles','monkeypox','normal']
             
 class SkinDataset(torch.utils.data.Dataset):
     def __init__(self, image_dirs,transform):
-        def get_images(class_name):
+        def get_images(class_name):                             '''Collects and returns all image filenames (ending with .jpg) from a specific class folder.'''
             print(class_name)
             images = [x for x in os.listdir(image_dirs[class_name]) if x.lower().endswith('jpg')]
             print(f'Found {len(images)}{class_name}')
@@ -30,9 +30,10 @@ class SkinDataset(torch.utils.data.Dataset):
             self.images[c]=get_images(c)
         self.image_dirs=image_dirs
         self.transform=transform
-    def __len__(self):
+                
+    def __len__(self):                                            '''Returns the total number of images in the dataset across all classes.'''
         return sum([len(self.images[c]) for c in self.class_names])
-    def __getitem__(self, index):
+    def __getitem__(self, index):                       '''Picks a random class, gets the image at the given index, applies transformations, and returns the image with its class label as an integer.'''
         class_name=random.choice(self.class_names)
         index=index%len(self.images[class_name])
         image_name=self.images[class_name][index]
@@ -78,7 +79,9 @@ print('Num of test batches', len(dl_test))
 
 
 class_names=train_dataset.class_names
-def show_images(images, labels, preds):
+def show_images(images, labels, preds):                '''Plots a batch of 6 images with actual (labels) and predicted (preds) class names.
+
+                                                            Colors prediction label green if correct, red if incorrect.'''
     plt.figure(figsize=(8,4))
     for i, image in enumerate(images):
         plt.subplot(1,6,i+1, xticks=[], yticks=[])
@@ -94,7 +97,7 @@ def show_images(images, labels, preds):
     plt.tight_layout()
     plt.show()
 ##########################
-def show_images1(images, labels, preds):
+def show_images1(images, labels, preds):   '''Similar to show_images but only shows predicted labels (both as x and y axis labels).'''
     plt.figure(figsize=(8,4))
     for i, image in enumerate(images):
         #plt.subplot(1,6,i+1, xticks=[], yticks=[])
@@ -124,7 +127,8 @@ print(propNN)
 propNN.fc=torch.nn.Linear(in_features=512, out_features=4)
 loss_fn=torch.nn.CrossEntropyLoss()
 optimizer=torch.optim.Adam(propNN.parameters(), lr=3e-5)
-def show_preds():
+
+def show_preds():   '''Fetches a test batch, runs the model on it, and visualizes predictions using show_images1.'''
     propNN.eval()
     images, labels =next(iter(dl_test))
     outputs = propNN(images)
@@ -132,7 +136,10 @@ def show_preds():
     show_images1(images, labels, preds)
 #show_preds()
 
-def train(epochs):
+def train(epochs):                                    '''Trains the neural network for a given number of epochs. 
+                                                   Performs: Training (forward pass, loss computation, backward pass, optimizer step). 
+                                                   Validation every 20 steps, reporting accuracy and validation loss'''
+            
     print('Starting training..')
     for e in range(0, epochs):
         print(f'Starting epoch {e+1}/{epochs}')
