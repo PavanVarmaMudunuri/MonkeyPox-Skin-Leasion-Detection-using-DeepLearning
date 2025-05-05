@@ -31,9 +31,10 @@ class SkinDataset(torch.utils.data.Dataset):
         self.image_dirs=image_dirs
         self.transform=transform
                 
-    def __len__(self):                                            '''Returns the total number of images in the dataset across all classes.'''
+    def __len__(self):                                                                    '''Returns the total number of images in the dataset across all classes.'''
         return sum([len(self.images[c]) for c in self.class_names])
-    def __getitem__(self, index):                       '''Picks a random class, gets the image at the given index, applies transformations, and returns the image with its class label as an integer.'''
+    def __getitem__(self, index):                                               '''Picks a random class, gets the image at the given index, applies transformations,
+                                                                                    and returns the image with its class label as an integer.'''
         class_name=random.choice(self.class_names)
         index=index%len(self.images[class_name])
         image_name=self.images[class_name][index]
@@ -97,7 +98,8 @@ def show_images(images, labels, preds):                '''Plots a batch of 6 ima
     plt.tight_layout()
     plt.show()
 ##########################
-def show_images1(images, labels, preds):   '''Similar to show_images but only shows predicted labels (both as x and y axis labels).'''
+def show_images1(images, labels, preds):                           '''Similar to show_images but only shows
+                                                                     predicted labels (both as x and y axis labels).'''
     plt.figure(figsize=(8,4))
     for i, image in enumerate(images):
         #plt.subplot(1,6,i+1, xticks=[], yticks=[])
@@ -128,7 +130,8 @@ propNN.fc=torch.nn.Linear(in_features=512, out_features=4)
 loss_fn=torch.nn.CrossEntropyLoss()
 optimizer=torch.optim.Adam(propNN.parameters(), lr=3e-5)
 
-def show_preds():   '''Fetches a test batch, runs the model on it, and visualizes predictions using show_images1.'''
+def show_preds():                                 '''Fetches a test batch, runs the model on it, 
+                                                    and visualizes predictions using show_images1.'''
     propNN.eval()
     images, labels =next(iter(dl_test))
     outputs = propNN(images)
