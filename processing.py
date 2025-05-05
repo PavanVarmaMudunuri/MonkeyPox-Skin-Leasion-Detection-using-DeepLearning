@@ -6,12 +6,14 @@ from matplotlib import pyplot as plt
 
 
 def PIL_img2CV_img(PILimg):
-    CVimg = cv2.cvtColor(np.asarray(PILimg), cv2.COLOR_RGB2BGR)
+    CVimg = cv2.cvtColor(np.asarray(PILimg), cv2.COLOR_RGB2BGR)       '''Converts a PIL image to an OpenCV image (NumPy array in BGR format).
+                                                                       This is needed because PIL and OpenCV use different color conventions (RGB vs BGR).'''
     return CVimg
 
 
 def CV_img2PIL_img(CVimg):
-    PILimg = Image.fromarray(cv2.cvtColor(CVimg, cv2.COLOR_BGR2RGB))
+    PILimg = Image.fromarray(cv2.cvtColor(CVimg, cv2.COLOR_BGR2RGB))         '''Converts an OpenCV image (BGR) back to a PIL image (RGB).
+                                                                                Useful for displaying or saving images using PIL.'''
     return PILimg
 
 
@@ -27,7 +29,10 @@ def hist_eql(pil_img):
 
     PIL_img_gray = CV_img2PIL_img(CV_img_gray)
     PIL_img_eq = CV_img2PIL_img(CV_img_eq)
-    return PIL_img_eq, PIL_img_gray
+    return PIL_img_eq, PIL_img_gray                     ''' Performs histogram equalization on a grayscale version of the input PIL image.
+
+                                                            Equalized image and original grayscale image are returned as PIL images.
+                                                            Histograms before and after equalization are saved using save_hist().'''
 
 
 def save_hist(cv_img, side):
@@ -39,7 +44,9 @@ def save_hist(cv_img, side):
     plt.plot(hist) 
     plt.xlim([0, 256])  
     # plt.show() 
-    plt.savefig('images/temp'+side)
+    plt.savefig('images/temp'+side)     ''' Plots and saves the grayscale histogram of the input OpenCV image.
+
+                                        The side parameter ('left' or 'right') is used to name the output file accordingly.'''
 
 
 def edge_detect(PIL_img):
@@ -47,7 +54,9 @@ def edge_detect(PIL_img):
     CV_gray = cv2.cvtColor(CV_img, cv2.COLOR_BGR2GRAY)
     
     CV_detected = cv2.Canny(CV_img, 100, 300)
-    return CV_img2PIL_img(cv2.cvtColor(CV_detected, cv2.COLOR_GRAY2BGR))
+    return CV_img2PIL_img(cv2.cvtColor(CV_detected, cv2.COLOR_GRAY2BGR))      ''' Applies Canny edge detection to the input image.
+
+                                                                                Returns a PIL image highlighting detected edges.'''
 
 
 def Otus_hold(PIL_img):
@@ -81,7 +90,9 @@ def Otus_hold(PIL_img):
                 u1tmp += j *float(pixPro[j])
 
         if float(w1)!=0.0 and float(w0) !=0.0:
-            u0 = u0tmp /w0
+            u0 = u0tmp /w0                                                  ''' Applies Otsu’s thresholding algorithm to segment the image into foreground and background.
+
+                                                                             Returns the original grayscale image and its binarized (thresholded) version as PIL images.'''
             u1 = u1tmp /w1        
             deltaTmp = w0*w1*(u0-u1)**2
             if deltaTmp > deltaMax: 
