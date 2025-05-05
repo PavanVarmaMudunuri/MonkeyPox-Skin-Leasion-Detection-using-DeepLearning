@@ -24,7 +24,10 @@ import warnings
 warnings.filterwarnings("ignore")
 ###############################
 ###############################
-def pre_process(fname):
+def pre_process(fname):                                                    ''' This is the main function that takes an image filename (fname) and performs preprocessing.
+                                                                                cv2.threshold is used to create binary images using different thresholding methods.
+                                                                                Otsu's thresholding is automatically determining the best threshold. 
+                                                                                Gaussian blur helps smooth the image before applying Otsu.'''
         filename=fname;
         img = cv2.imread(filename,0)
         ret1,th1 = cv2.threshold(img,127,255,cv2.THRESH_BINARY)
@@ -37,7 +40,7 @@ def pre_process(fname):
         titles = ['Original Noisy Image','Histogram','Global Thresholding',
                   'Original Noisy Image','Histogram',"Otsu's Thresholding",
                   'Gaussian filtered Image','Histogram',"Otsu's Thresholding"]
-        for i in range(3):
+        for i in range(3):                                                                                            '''Shows comparisons between global and Otsu’s thresholding with and without noise reduction.'''
                 plt.subplot(3,3,i*3+1),plt.imshow(images[i*3],'gray')
                 plt.title(titles[i*3]), plt.xticks([]), plt.yticks([])
                 plt.subplot(3,3,i*3+2),plt.hist(images[i*3].ravel(),256)
@@ -45,8 +48,10 @@ def pre_process(fname):
                 plt.subplot(3,3,i*3+3),plt.imshow(images[i*3+2],'gray')
                 plt.title(titles[i*3+2]), plt.xticks([]), plt.yticks([])
         plt.show()
-#################################
-        ret,thresh1 = cv2.threshold(img,127,255,cv2.THRESH_BINARY)
+#################################                                                                     
+
+#################################                                                                                       
+        ret,thresh1 = cv2.threshold(img,127,255,cv2.THRESH_BINARY)                        '''Applies and visualizes all basic OpenCV thresholding types: BINARY, INV, TRUNC, TOZERO, and TOZERO_INV.'''
         ret,thresh2 = cv2.threshold(img,127,255,cv2.THRESH_BINARY_INV)
         ret,thresh3 = cv2.threshold(img,127,255,cv2.THRESH_TRUNC)
         ret,thresh4 = cv2.threshold(img,127,255,cv2.THRESH_TOZERO)
@@ -60,7 +65,9 @@ def pre_process(fname):
         plt.show()
 ###############################
         I = img
-        height, width = np.shape(I)
+        height, width = np.shape(I)                                        '''Calculates the mean pixel value to be used as an initial threshold.
+
+                                                                        Then separates the image into two groups based on this threshold for further analysis.'''
         print("Size of Image: ", height, " X ", width)
         plt.imshow(I, cmap=plt.get_cmap('gray'))
         plt.title("Original Image (Step 1)")
@@ -97,13 +104,13 @@ def pre_process(fname):
         c= -2
 
         Threshold2=Threshold
-        while c > 1:#checking for T0 Condition
+        while c > 1:#checking for T0 Condition          '''Uses iterative method to converge to a better threshold value by recalculating class means.'''
                 sum1=0
                 sum2=0
                 count1=0
                 count2=0
                 Threshold2=Threshold
-                for i in np.arange(height):
+                for i in np.arange(height):                         '''Applies the computed final threshold and modifies the original image to a binary form.'''
                         for j in np.arange(width):
                                 a = I.item(i,j)
                                 if a > Threshold:
@@ -132,7 +139,7 @@ def pre_process(fname):
         Icopy = I.astype('uint8')
         mean = 1.0 # some constant
         std = 1.0# some constant (standard deviation)
-        noisy_img = Icopy + np.random.normal(mean, std, Icopy.shape)
+        noisy_img = Icopy + np.random.normal(mean, std, Icopy.shape)                  '''Adds Gaussian noise to the image to simulate real-world imaging noise.'''
         I2 = np.clip(noisy_img, 0, 255)
         plt.imshow(I2, cmap=plt.get_cmap('gray'))
         plt.title(" Noise Addition ::")
@@ -140,14 +147,14 @@ def pre_process(fname):
         img_bw = 255*I2.astype('uint8')
         se1 = cv2.getStructuringElement(cv2.MORPH_RECT, (5,5))
         se2 = cv2.getStructuringElement(cv2.MORPH_RECT, (2,2))
-        mask = cv2.morphologyEx(img_bw, cv2.MORPH_CLOSE, se1)
+        mask = cv2.morphologyEx(img_bw, cv2.MORPH_CLOSE, se1)   '''Uses morphological operations (MORPH_CLOSE and MORPH_OPEN) to remove small noise and artifacts.'''
         mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, se2)
         out = I2 * mask
         plt.imshow(out, cmap=plt.get_cmap('gray'))
         plt.title("Removal of Noise ")
         plt.show()
         ## median Filter ###
-        out2 =cv2.medianBlur(I, 3)
+        out2 =cv2.medianBlur(I, 3)                                        '''Applies a median filter to smooth the image and reduce noise while preserving edges.'''
         plt.imshow(out2, cmap=plt.get_cmap('gray'))
         plt.title("Removal of Noise median Filter ")
         plt.show()
@@ -157,7 +164,10 @@ def pre_process(fname):
         img = cv2.imread(filename)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 #_,contours,hierarchy = cv2.findContours(img, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_TC89_KCOS)
-        contours,hierarchy = cv2.findContours(img, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_TC89_KCOS)
+        contours,hierarchy = cv2.findContours(img, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_TC89_KCOS)    '''Finds and labels contours in the image.
+
+                                                                                                Uses regionprops to get statistics about labeled regions.
+                                                                                                Counts objects that are larger than a calculated threshold area.'''
 
 #V1 = img.astype(np.int32)
         V2 = np.zeros_like(img).astype(np.uint8)
